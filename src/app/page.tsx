@@ -95,19 +95,26 @@ export default function HomePage() {
           모든 영어수업 준비를 자동으로 처리합니다.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 fade-in fade-in-delay-3">
+        <div className="flex flex-col sm:flex-row gap-4 fade-in fade-in-delay-3 justify-center">
           <Link
             href="/register"
-            className="btn-glow px-8 py-4 text-base flex items-center gap-2 relative z-10"
+            className="btn-glow px-8 py-4 text-base flex items-center justify-center gap-2 relative z-10"
           >
             무료로 시작하기
             <ChevronRight className="w-5 h-5" />
           </Link>
           <Link
             href="/login"
-            className="px-8 py-4 text-base font-medium glass-card hover:border-slate-500 transition-colors flex items-center gap-2"
+            className="px-8 py-4 text-base font-medium glass-card hover:border-slate-500 transition-colors flex items-center justify-center gap-2"
           >
             로그인
+          </Link>
+          <Link
+            href="/about"
+            className="px-8 py-4 text-base font-medium bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-slate-500 rounded-xl transition-colors flex items-center justify-center gap-2"
+          >
+            <FileText className="w-5 h-5 text-indigo-400" />
+            테크 스펙 & 가이드
           </Link>
         </div>
       </section>
