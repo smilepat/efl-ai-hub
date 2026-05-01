@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Brain, Server, ShieldCheck, Cpu, Database, Network } from 'lucide-react';
+import { ArrowLeft, BookOpen, Brain, Server, ShieldCheck, Cpu, Database, Network, Target, Sparkles } from 'lucide-react';
 
 export default function AboutPage() {
   return (

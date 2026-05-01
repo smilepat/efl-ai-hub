@@ -75,7 +75,7 @@ async function main() {
       const text = result.response.text();
       const taskPayload = parseGeminiJson(text);
 
-      const taskId = `Q_TASK_${passage.id.replace('P_', '')}`;
+      const taskId = `Q_TASK_${String(passage.id).replace('P_', '')}`;
       await db.execute({
         sql: `
           INSERT INTO questions (id, passage_id, type, prompt, options, answer, skill, created_by)
