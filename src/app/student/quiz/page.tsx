@@ -7,6 +7,8 @@ import {
   Loader2, Target, Zap, AlertCircle,
 } from 'lucide-react';
 import ChunkingTask from '@/components/tasks/ChunkingTask';
+import LinkingTask from '@/components/tasks/LinkingTask';
+import HighlightTask from '@/components/tasks/HighlightTask';
 
 // ── 타입 ──────────────────────────────────────────────────────
 interface PassageInfo {
@@ -394,17 +396,39 @@ export default function StudentQuizPage() {
       </div>
 
       {/* 보기 또는 마이크로 과업 렌더링 (Component Registry Pattern) */}
-      {q.type === 'logicflow_chunking' ? (
+      {q.type.startsWith('logicflow_') ? (
         <div className="mt-4">
-          <ChunkingTask 
-            taskData={q.options as unknown as any} 
-            onComplete={(isCorrect) => {
-              if (step !== 'answered') {
-                // 더미 라벨 'A' 또는 'X' 전송 (마이크로 태스크 전용 로깅을 추후 추가 가능)
-                handleSubmit(isCorrect ? 'A' : 'B');
-              }
-            }} 
-          />
+          {/* Task 유형별 동적 렌더링 */}
+          {q.type === 'logicflow_chunking' && (
+            <ChunkingTask 
+              taskData={q.options as unknown as any} 
+              onComplete={(isCorrect) => {
+                if (step !== 'answered') {
+                  handleSubmit(isCorrect ? 'A' : 'B');
+                }
+              }} 
+            />
+          )}
+          {q.type === 'logicflow_linking' && (
+            <LinkingTask 
+              taskData={q.options as unknown as any} 
+              onComplete={(isCorrect) => {
+                if (step !== 'answered') {
+                  handleSubmit(isCorrect ? 'A' : 'B');
+                }
+              }} 
+            />
+          )}
+          {q.type === 'logicflow_highlight' && (
+            <HighlightTask 
+              taskData={q.options as unknown as any} 
+              onComplete={(isCorrect) => {
+                if (step !== 'answered') {
+                  handleSubmit(isCorrect ? 'A' : 'B');
+                }
+              }} 
+            />
+          )}
           {step === 'answered' && (
             <button
               onClick={nextQuestion}

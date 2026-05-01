@@ -1,7 +1,7 @@
 import { auth } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 import Link from 'next/link';
-import { Brain, HelpCircle, RotateCcw, TrendingUp, Target, Zap } from 'lucide-react';
+import { Brain, HelpCircle, RotateCcw, TrendingUp, Target, Zap, AlertCircle, BarChart3 } from 'lucide-react';
 
 const SKILL_KR: Record<string, string> = {
   vocabulary: '어휘', inference: '추론', main_idea: '주제·요지',
@@ -116,6 +116,20 @@ export default async function StudentDashboard() {
             color: 'from-amber-500 to-orange-500',
             title: '복습 과제',
             desc: 'AI가 추천한 복습 어휘와 문항',
+          },
+          {
+            href: '/student/wrong-notes',
+            icon: AlertCircle,
+            color: 'from-red-500 to-rose-500',
+            title: '오답 노트',
+            desc: 'AI 해설과 함께 틀린 문항을 복습하세요',
+          },
+          {
+            href: '/student/report',
+            icon: BarChart3,
+            color: 'from-indigo-500 to-violet-500',
+            title: '진단 리포트',
+            desc: '나의 스킬별 강점과 약점을 확인하세요',
           },
           {
             href: '/student/passage',
