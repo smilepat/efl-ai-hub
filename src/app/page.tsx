@@ -110,11 +110,11 @@ export default function HomePage() {
             로그인
           </Link>
           <Link
-            href="/about"
-            className="px-8 py-4 text-base font-medium bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-slate-500 rounded-xl transition-colors flex items-center justify-center gap-2"
+            href="/guide"
+            className="px-8 py-4 text-base font-medium bg-gradient-to-r from-indigo-500/20 to-purple-500/20 hover:from-indigo-500/30 hover:to-purple-500/30 border border-indigo-500/30 hover:border-indigo-500/50 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
           >
-            <FileText className="w-5 h-5 text-indigo-400" />
-            테크 스펙 & 가이드
+            <BookOpen className="w-5 h-5 text-indigo-400" />
+            앱 가이드
           </Link>
         </div>
       </section>
