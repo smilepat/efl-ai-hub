@@ -42,6 +42,9 @@ export default function ChunkingTask({ taskData, onComplete }: ChunkingTaskProps
 
   const [selectedBoundaries, setSelectedBoundaries] = useState<Set<number>>(new Set());
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [clickLog, setClickLog] = useState<Array<{ wordIndex: number; timestamp: number }>>([]);
+  const [attemptCount, setAttemptCount] = useState(1);
+  const [startTime] = useState(Date.now());
 
   const toggleBoundary = (index: number) => {
     if (isSubmitted) return;
@@ -49,20 +52,54 @@ export default function ChunkingTask({ taskData, onComplete }: ChunkingTaskProps
     if (newSet.has(index)) newSet.delete(index);
     else newSet.add(index);
     setSelectedBoundaries(newSet);
+    // 클릭 로그 기록
+    setClickLog(prev => [...prev, { wordIndex: index, timestamp: Date.now() - startTime }]);
   };
 
-  const checkAnswer = () => {
+  const checkAnswer = async () => {
     setIsSubmitted(true);
     let isCorrect = selectedBoundaries.size === correctBoundaries.size;
     for (let b of selectedBoundaries) {
       if (!correctBoundaries.has(b)) isCorrect = false;
     }
+
+    // 정확도 점수 계산 (0~1)
+    const totalBoundaries = correctBoundaries.size;
+    let matchCount = 0;
+    for (let b of selectedBoundaries) {
+      if (correctBoundaries.has(b)) matchCount++;
+    }
+    const score = totalBoundaries > 0 ? matchCount / totalBoundaries : 0;
+    const timeMs = Date.now() - startTime;
+
+    // Evidence API로 행동 데이터 전송
+    try {
+      await fetch('/api/student/evidence', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          questionId: (taskData as any).questionId ?? null,
+          taskType: 'chunking',
+          isCorrect,
+          attemptCount,
+          timeMs,
+          clickLog,
+          score,
+        }),
+      });
+    } catch (e) {
+      // 실패해도 UI는 정상 동작
+      console.warn('Evidence 전송 실패:', e);
+    }
+
     if (onComplete) onComplete(isCorrect);
   };
 
   const reset = () => {
     setIsSubmitted(false);
-    setSelectedBoundaries(newSet => new Set());
+    setSelectedBoundaries(new Set());
+    setAttemptCount(prev => prev + 1);
+    setClickLog([]);
   };
 
   return (

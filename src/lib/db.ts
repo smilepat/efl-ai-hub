@@ -155,6 +155,22 @@ export async function initDbSchema() {
       created_at            DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    -- 🧪 학습자 행동 증거 (LogicFlow Evidence)
+    CREATE TABLE IF NOT EXISTS learner_evidence (
+      id            TEXT PRIMARY KEY,
+      student_id    TEXT NOT NULL,
+      question_id   TEXT REFERENCES questions(id),
+      task_type     TEXT NOT NULL,
+      is_correct    INTEGER DEFAULT 0,
+      attempt_count INTEGER DEFAULT 1,
+      time_ms       INTEGER DEFAULT 0,
+      click_log     TEXT,
+      score         REAL DEFAULT 0,
+      created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_evidence_student ON learner_evidence(student_id);
+
     CREATE INDEX IF NOT EXISTS idx_csat_year ON csat_items(year);
     CREATE INDEX IF NOT EXISTS idx_csat_type ON csat_items(question_type);
     CREATE INDEX IF NOT EXISTS idx_csat_completed ON csat_items(question_id);
