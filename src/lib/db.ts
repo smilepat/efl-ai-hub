@@ -10,22 +10,20 @@ let _db: Client | null = null;
 export function getDb(): Client {
   if (_db) return _db;
 
-  if (!fs.existsSync(DB_DIR)) {
-    fs.mkdirSync(DB_DIR, { recursive: true });
-  }
-
   const url = process.env.TURSO_DATABASE_URL || `file:${DB_PATH}`;
   const authToken = process.env.TURSO_AUTH_TOKEN;
+
+  // 로컬 파일 DB인 경우에만 디렉토리 생성 (Vercel은 읽기 전용 파일시스템)
+  if (!process.env.TURSO_DATABASE_URL) {
+    if (!fs.existsSync(DB_DIR)) {
+      fs.mkdirSync(DB_DIR, { recursive: true });
+    }
+  }
 
   _db = createClient({
     url,
     authToken,
   });
-
-  // DB 스키마 초기화는 별도 스크립트나 마이그레이션 도구를 사용하는 것을 권장하지만,
-  // 로컬 파일 DB인 경우를 위해 시도해 볼 수 있습니다.
-  // 클라이언트가 비동기이므로 동기 함수에서 직접 실행하지 못하고 프로미스를 던져야 합니다.
-  // 안전을 위해 로컬에서 직접 쿼리를 실행해 스키마를 보장한다고 가정합니다.
 
   return _db;
 }
