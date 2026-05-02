@@ -9,14 +9,17 @@ async function main() {
   console.log('🚀 AI 오답 해설 자동 생성 배치 파이프라인 시작');
   const db = getDb();
 
-  // 해설이 없는 일반 문항 조회 (우선 테스트로 10개만 진행)
+  // 해설이 없는 모든 문항 조회 (logicflow 제외)
   const res = await db.execute(`
-    SELECT q.id, q.prompt, q.options, q.answer, p.text as passage_text 
+    SELECT q.id, q.type, q.prompt, q.options, q.answer, p.text as passage_text 
     FROM questions q 
     JOIN passages p ON q.passage_id = p.id
-    WHERE q.type = 'csat' AND (q.explanation IS NULL OR q.explanation = '')
-    LIMIT 10
+    WHERE (q.explanation IS NULL OR q.explanation = '')
+      AND q.type NOT LIKE 'logicflow_%'
+    ORDER BY q.id
   `);
+
+  console.log(`📊 해설 미생성 문항: ${res.rows.length}개`);
   
   if (res.rows.length === 0) {
     console.log('✅ 해설이 없는 문항이 없습니다. (모두 완료)');
@@ -85,7 +88,8 @@ ${q.answer}
     }
     
     // API Rate limit 고려
-    await new Promise(r => setTimeout(r, 2000));
+    // Gemini Flash rate limit: 15 RPM free tier → 1회/4초
+    await new Promise(r => setTimeout(r, 4000));
   }
   
   console.log('\n🎉 AI 오답 해설 배치 생성 완료!');

@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { getDb } from '@/lib/db';
+import bcrypt from 'bcryptjs';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -21,8 +22,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!user) return null;
 
-        // NOTE: 실제 운영에서는 bcrypt 해싱 필요
-        if (user.password !== credentials.password) return null;
+        // bcrypt 해싱 비교 (레거시 평문 호환)
+        const isHashed = user.password.startsWith('$2a$') || user.password.startsWith('$2b$');
+        const isValid = isHashed
+          ? await bcrypt.compare(credentials.password as string, user.password)
+          : user.password === credentials.password;
+        if (!isValid) return null;
 
         return { id: user.id, name: user.name, email: user.email, role: user.role };
       },

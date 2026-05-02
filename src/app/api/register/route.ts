@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { randomUUID } from 'crypto';
+import bcrypt from 'bcryptjs';
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,11 +24,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '이미 사용 중인 이메일입니다.' }, { status: 409 });
     }
 
-    // NOTE: 실제 운영에서는 bcrypt 해싱 필요
+    // bcrypt 해싱 (cost factor 12)
+    const hashedPassword = await bcrypt.hash(password, 12);
     const id = `U_${randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()}`;
     await db.execute({ sql:
       'INSERT INTO users (id, name, email, password, role) VALUES (?, ?, ?, ?, ?)'
-    , args: [id, name, email, password, role] });
+    , args: [id, name, email, hashedPassword, role] });
 
     return NextResponse.json({ success: true, id });
   } catch (err) {
